@@ -1,0 +1,317 @@
+import React, { useRef, useState } from "react";
+
+
+export default function AdicionarCodigoREUP() {
+  // Estados de los campos
+  const [denominacion, setDenominacion] = useState("");
+  const [codigoREUP, setCodigoREUP] = useState("");
+  const [abreviatura, setAbreviatura] = useState("");
+  const [fechaInicio, setFechaInicio] = useState("");
+  const [fechaFin, setFechaFin] = useState("");
+  const [propio, setPropio] = useState(false);
+  const [descripcion, setDescripcion] = useState("");
+  const [errors, setErrors] = useState({});
+  const [showValidation, setShowValidation] = useState(false);
+
+  // Formato descripción
+  const [fontFamily, setFontFamily] = useState("Helvetica");
+  const [fontWeight, setFontWeight] = useState("normal");
+  const [fontStyle, setFontStyle] = useState("normal");
+  const [textDecoration, setTextDecoration] = useState("none");
+  const [fontColor, setFontColor] = useState("#000000");
+  const [bgColor, setBgColor] = useState("#ffffff");
+
+  const textareaRef = useRef(null);
+
+  // Validación
+  const validate = () => {
+    let newErrors = {};
+    if (!denominacion.trim()) newErrors.denominacion = "Campo obligatorio";
+    if (!codigoREUP.trim()) newErrors.codigoREUP = "Campo obligatorio";
+    if (!abreviatura.trim()) newErrors.abreviatura = "Campo obligatorio";
+    if (!fechaInicio) newErrors.fechaInicio = "Campo obligatorio";
+    if (fechaInicio && fechaFin && fechaInicio > fechaFin) {
+      newErrors.fechaInicio = "La fecha de inicio no puede ser mayor que la fecha fin";
+      newErrors.fechaFin = "La fecha fin no puede ser menor que la fecha de inicio";
+    }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  // Envío
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setShowValidation(true);
+    if (validate()) {
+      alert("Formulario válido");
+    }
+  };
+
+  // Formato descripción
+  const toggleBold = () => setFontWeight(fontWeight === "bold" ? "normal" : "bold");
+  const toggleItalic = () => setFontStyle(fontStyle === "italic" ? "normal" : "italic");
+  const toggleUnderline = () =>
+    setTextDecoration(textDecoration === "underline" ? "none" : "underline");
+
+  // Sincroniza estilos
+  React.useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.fontFamily = fontFamily;
+      textareaRef.current.style.fontWeight = fontWeight;
+      textareaRef.current.style.fontStyle = fontStyle;
+      textareaRef.current.style.textDecoration = textDecoration;
+      textareaRef.current.style.color = fontColor;
+      textareaRef.current.style.backgroundColor = bgColor;
+    }
+  }, [fontFamily, fontWeight, fontStyle, textDecoration, fontColor, bgColor]);
+
+  return (
+    <div className="flex justify-center items-center min-h-screen bg-gray-100">
+      <form
+        className="bg-white rounded-lg shadow-lg border-2 border-purple-300 w-[540px]"
+        onSubmit={handleSubmit}
+        autoComplete="off"
+      >
+        {/* Header */}
+        <div className="bg-purple-300 rounded-t-lg flex justify-between items-center px-4 py-2">
+          <span className="text-sm text-white font-semibold">Adicionar código REUP</span>
+          <button
+            type="button"
+            className="text-white text-lg font-bold hover:text-purple-700"
+            tabIndex={-1}
+            title="Cerrar"
+          >
+            ×
+          </button>
+        </div>
+
+        {/* Body */}
+        <div className="px-4 py-3">
+          {/* Denominación */}
+          <div className="mb-2">
+            <label className="block text-sm font-medium text-gray-700">
+              Denominación <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              className={`mt-1 block w-full rounded border px-2 py-1 text-sm ${
+                showValidation && errors.denominacion
+                  ? "border-red-500"
+                  : "border-gray-300"
+              }`}
+              value={denominacion}cd
+              onChange={e => setDenominacion(e.target.value)}
+            />
+            {showValidation && errors.denominacion && (
+              <p className="text-xs text-red-500">{errors.denominacion}</p>
+            )}
+          </div>
+
+          {/* Código REUP y Abreviatura */}
+          <div className="flex gap-2 mb-2">
+            <div className="flex-1">
+              <label className="block text-sm font-medium text-gray-700">
+                Código REUP <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                className={`mt-1 block w-full rounded border px-2 py-1 text-sm ${
+                  showValidation && errors.codigoREUP
+                    ? "border-red-500"
+                    : "border-gray-300"
+                }`}
+                value={codigoREUP}
+                onChange={e => setCodigoREUP(e.target.value)}
+              />
+              {showValidation && errors.codigoREUP && (
+                <p className="text-xs text-red-500">{errors.codigoREUP}</p>
+              )}
+            </div>
+            <div className="flex-1">
+              <label className="block text-sm font-medium text-gray-700">
+                Abreviatura <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                className={`mt-1 block w-full rounded border px-2 py-1 text-sm ${
+                  showValidation && errors.abreviatura
+                    ? "border-red-500"
+                    : "border-gray-300"
+                }`}
+                value={abreviatura}
+                onChange={e => setAbreviatura(e.target.value)}
+              />
+              {showValidation && errors.abreviatura && (
+                <p className="text-xs text-red-500">{errors.abreviatura}</p>
+              )}
+            </div>
+          </div>
+
+          {/* Fechas */}
+          <div className="flex gap-2 mb-2">
+            <div className="flex-1">
+              <label className="block text-sm font-medium text-gray-700">
+                Fecha inicio <span className="text-red-500">*</span>
+              </label>
+              <div className="relative">
+                <input
+                  type="date"
+                  className={`mt-1 block w-full rounded border px-2 py-1 text-sm pr-8 ${
+                    showValidation && errors.fechaInicio
+                      ? "border-red-500"
+                      : "border-gray-300"
+                  }`}
+                  value={fechaInicio}
+                  onChange={e => setFechaInicio(e.target.value)}
+                />
+                <span className="absolute right-2 top-2 text-gray-400 pointer-events-none">
+                  <svg width="16" height="16" fill="currentColor"><rect width="16" height="16" rx="2" fill="#eee"/><path d="M4 7h8M4 10h8" stroke="#bbb" strokeWidth="1.2" strokeLinecap="round"/><rect x="3" y="3" width="10" height="10" rx="2" stroke="#bbb" strokeWidth="1.2" fill="none"/></svg>
+                </span>
+              </div>
+              {showValidation && errors.fechaInicio && (
+                <p className="text-xs text-red-500">{errors.fechaInicio}</p>
+              )}
+            </div>
+            <div className="flex-1">
+              <label className="block text-sm font-medium text-gray-700">
+                Fecha fin:
+              </label>
+              <div className="relative">
+                <input
+                  type="date"
+                  className={`mt-1 block w-full rounded border px-2 py-1 text-sm pr-8 ${
+                    showValidation && errors.fechaFin
+                      ? "border-red-500"
+                      : "border-gray-300"
+                  }`}
+                  value={fechaFin}
+                  onChange={e => setFechaFin(e.target.value)}
+                />
+                <span className="absolute right-2 top-2 text-gray-400 pointer-events-none">
+                  <svg width="16" height="16" fill="currentColor"><rect width="16" height="16" rx="2" fill="#eee"/><path d="M4 7h8M4 10h8" stroke="#bbb" strokeWidth="1.2" strokeLinecap="round"/><rect x="3" y="3" width="10" height="10" rx="2" stroke="#bbb" strokeWidth="1.2" fill="none"/></svg>
+                </span>
+              </div>
+              {showValidation && errors.fechaFin && (
+                <p className="text-xs text-red-500">{errors.fechaFin}</p>
+              )}
+            </div>
+          </div>
+
+          {/* Propio */}
+          <div className="flex items-center mb-2">
+            <input
+              id="propio"
+              type="checkbox"
+              checked={propio}
+              onChange={e => setPropio(e.target.checked)}
+              className="h-4 w-4 border-gray-300 rounded mr-2"
+            />
+            <label htmlFor="propio" className="text-sm font-medium text-gray-700">
+              Propio:
+            </label>
+          </div>
+
+          {/* Descripción */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Descripción:
+            </label>
+            <div className="flex items-center gap-1 mb-1">
+              <select
+                value={fontFamily}
+                onChange={e => setFontFamily(e.target.value)}
+                className="border rounded px-1 py-0.5 text-xs"
+                style={{ width: "110px" }}
+              >
+                <option value="Helvetica">Helvetica</option>
+                <option value="Arial">Arial</option>
+                <option value="Times New Roman">Times New Roman</option>
+              </select>
+              <button
+                type="button"
+                className={`border rounded px-1 py-0.5 text-xs font-bold ${fontWeight === "bold" ? "bg-purple-200" : ""}`}
+                onClick={toggleBold}
+                tabIndex={-1}
+                title="Negrita"
+              >
+                B
+              </button>
+              <button
+                type="button"
+                className={`border rounded px-1 py-0.5 text-xs italic ${fontStyle === "italic" ? "bg-purple-200" : ""}`}
+                onClick={toggleItalic}
+                tabIndex={-1}
+                title="Cursiva"
+              >
+                I
+              </button>
+              <button
+                type="button"
+                className={`border rounded px-1 py-0.5 text-xs underline ${textDecoration === "underline" ? "bg-purple-200" : ""}`}
+                onClick={toggleUnderline}
+                tabIndex={-1}
+                title="Subrayado"
+              >
+                U
+              </button>
+              <input
+                type="color"
+                value={fontColor}
+                onChange={e => setFontColor(e.target.value)}
+                className="w-6 h-6 border rounded p-0"
+                title="Color de texto"
+                tabIndex={-1}
+              />
+              <input
+                type="color"
+                value={bgColor}
+                onChange={e => setBgColor(e.target.value)}
+                className="w-6 h-6 border rounded p-0"
+                title="Color de fondo"
+                tabIndex={-1}
+              />
+            </div>
+            <textarea
+              ref={textareaRef}
+              rows={4}
+              className="block w-full rounded border border-gray-300 px-2 py-1 text-sm resize-none"
+              value={descripcion}
+              onChange={e => setDescripcion(e.target.value)}
+              style={{
+                fontFamily,
+                fontWeight,
+                fontStyle,
+                textDecoration,
+                color: fontColor,
+                backgroundColor: bgColor,
+                minHeight: "80px"
+              }}
+            />
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="bg-purple-200 rounded-b-lg flex justify-end gap-2 px-4 py-2">
+          <button
+            type="button"
+            className="flex items-center gap-1 bg-purple-300 text-white px-4 py-1 rounded text-sm hover:bg-purple-400"
+          >
+            <span className="material-icons text-base">Cancelar</span> 
+          </button>
+          <button
+            type="button"
+            className="flex items-center gap-1 bg-purple-300 text-white px-4 py-1 rounded text-sm hover:bg-purple-400"
+          >
+            <span className="material-icons text-base">Aplicar</span> 
+          </button>
+          <button
+            type="submit"
+            className="flex items-center gap-1 bg-purple-300 text-white px-4 py-1 rounded text-sm hover:bg-purple-400"
+          >
+            <span className="material-icons text-base">Aceptar</span> 
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+}
